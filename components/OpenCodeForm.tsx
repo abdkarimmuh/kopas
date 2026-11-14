@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { noAutofill } from "./PinInput";
 import { CODE_LENGTH, isValidCode, normalizeCode } from "@/lib/shared";
 
 export function OpenCodeForm() {
@@ -17,7 +18,7 @@ export function OpenCodeForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="card space-y-3">
+    <form onSubmit={onSubmit} autoComplete="off" className="card space-y-3">
       <label className="block space-y-1">
         <span className="text-sm font-medium">Punya code? Buka tulisan</span>
         <div className="flex gap-2">
@@ -29,8 +30,9 @@ export function OpenCodeForm() {
             }}
             placeholder="K7Q2XM"
             maxLength={CODE_LENGTH + 2}
+            name="kopas-code"
             autoCapitalize="characters"
-            autoComplete="off"
+            {...noAutofill}
             className="input font-mono uppercase tracking-widest"
           />
           <button type="submit" className="btn-primary shrink-0">

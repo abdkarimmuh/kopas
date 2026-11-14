@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getSalt, openNote } from "@/app/actions";
 import { decryptNote, deriveAuthToken } from "@/lib/crypto";
 import { CopyButton } from "./CopyButton";
+import { PinInput } from "./PinInput";
 
 type State =
   | { kind: "form"; error?: string }
@@ -25,7 +26,11 @@ export function OpenNote({ code }: { code: string }) {
       if (!salt.ok) {
         return setState(
           salt.error === "not_found"
-            ? { kind: "gone", message: "Tulisan tidak ditemukan, sudah kedaluwarsa, atau sudah dihapus." }
+            ? {
+                kind: "gone",
+                message:
+                  "Tulisan tidak ditemukan, sudah kedaluwarsa, atau sudah dihapus.",
+              }
             : { kind: "form", error: "Server error. Coba lagi." },
         );
       }
@@ -42,16 +47,21 @@ export function OpenNote({ code }: { code: string }) {
             burned: res.burned,
           });
         case "wrong_pin":
-          return setState({ kind: "form", error: `PIN salah. Sisa percobaan: ${res.remaining}.` });
+          return setState({
+            kind: "form",
+            error: `PIN salah. Sisa percobaan: ${res.remaining}.`,
+          });
         case "locked":
           return setState({
             kind: "gone",
-            message: "Terlalu banyak PIN salah. Tulisan telah dihapus demi keamanan.",
+            message:
+              "Terlalu banyak PIN salah. Tulisan telah dihapus demi keamanan.",
           });
         case "not_found":
           return setState({
             kind: "gone",
-            message: "Tulisan tidak ditemukan, sudah kedaluwarsa, atau sudah dihapus.",
+            message:
+              "Tulisan tidak ditemukan, sudah kedaluwarsa, atau sudah dihapus.",
           });
         default:
           return setState({ kind: "form", error: "Server error. Coba lagi." });
@@ -77,7 +87,7 @@ export function OpenNote({ code }: { code: string }) {
   if (state.kind === "open") {
     return (
       <div className="card space-y-4">
-        <pre className="input max-h-[60vh] overflow-auto whitespace-pre-wrap break-words font-mono text-sm">
+        <pre className="max-h-[60vh] overflow-auto whitespace-pre-wrap break-words font-mono text-sm">
           {state.text}
         </pre>
         <div className="flex flex-wrap items-center gap-2">
@@ -88,7 +98,8 @@ export function OpenNote({ code }: { code: string }) {
         </div>
         {state.burned && (
           <p className="text-xs text-amber-600 dark:text-amber-400">
-            Tulisan ini sudah dihapus dari server. Salin sekarang sebelum menutup halaman.
+            Tulisan ini sudah dihapus dari server. Salin sekarang sebelum
+            menutup halaman.
           </p>
         )}
       </div>
@@ -96,20 +107,19 @@ export function OpenNote({ code }: { code: string }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="card space-y-4">
-      <label className="block space-y-1">
+    <form onSubmit={onSubmit} autoComplete="off" className="card space-y-4">
+      <div className="space-y-1">
         <span className="text-sm font-medium">Masukkan PIN</span>
-        <input
-          type="password"
-          value={pin}
-          onChange={(e) => setPin(e.target.value)}
-          autoFocus
-          autoComplete="off"
-          className="input"
-        />
-      </label>
-      {state.error && <p className="text-sm text-red-600 dark:text-red-400">{state.error}</p>}
-      <button type="submit" disabled={busy || !pin} className="btn-primary w-full">
+        <PinInput value={pin} onChange={setPin} autoFocus />
+      </div>
+      {state.error && (
+        <p className="text-sm text-red-600 dark:text-red-400">{state.error}</p>
+      )}
+      <button
+        type="submit"
+        disabled={busy || !pin}
+        className="btn-primary w-full"
+      >
         {busy ? "Membuka…" : "Buka tulisan"}
       </button>
     </form>

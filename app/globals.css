@@ -8,8 +8,18 @@
   --muted: #71717a;
 }
 
+/* Tema dipilih lewat ThemeToggle → <html data-theme="light|dark">. */
+:root[data-theme="dark"] {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --card: #18181b;
+  --border: #27272a;
+  --muted: #a1a1aa;
+}
+
+/* Fallback jika JS mati: ikuti tema OS. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme]) {
     --background: #0a0a0a;
     --foreground: #ededed;
     --card: #18181b;
@@ -17,6 +27,9 @@
     --muted: #a1a1aa;
   }
 }
+
+/* Utility `dark:` mengikuti data-theme, bukan media query. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 @theme inline {
   --color-background: var(--background);
@@ -47,3 +60,4 @@ body {
     @apply rounded-lg border border-border px-3 py-1.5 text-sm font-medium transition-colors hover:bg-foreground/5;
   }
 }
+

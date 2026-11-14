@@ -5,6 +5,7 @@ import { createNote } from "@/app/actions";
 import { encryptNote } from "@/lib/crypto";
 import { MAX_TEXT_BYTES, MIN_PIN_LENGTH, TTL_OPTIONS, type Ttl } from "@/lib/shared";
 import { CopyButton } from "./CopyButton";
+import { PinInput, noAutofill } from "./PinInput";
 
 type Created = { code: string; expiresAt: string | null; burn: boolean };
 
@@ -67,26 +68,20 @@ export function CreateForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="card space-y-4">
+    <form onSubmit={onSubmit} autoComplete="off" className="card space-y-4">
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder="Tulis atau tempel teks di sini…"
+        {...noAutofill}
         rows={8}
         className="input min-h-40 resize-y font-mono text-sm"
       />
       <div className="grid gap-4 sm:grid-cols-2">
-        <label className="space-y-1">
+        <div className="space-y-1">
           <span className="text-sm font-medium">PIN</span>
-          <input
-            type="password"
-            value={pin}
-            onChange={(e) => setPin(e.target.value)}
-            autoComplete="new-password"
-            placeholder={`Minimal ${MIN_PIN_LENGTH} karakter`}
-            className="input"
-          />
-        </label>
+          <PinInput value={pin} onChange={setPin} placeholder={`Minimal ${MIN_PIN_LENGTH} karakter`} />
+        </div>
         <label className="space-y-1">
           <span className="text-sm font-medium">Masa simpan</span>
           <select value={ttl} onChange={(e) => setTtl(e.target.value as Ttl)} className="input">
